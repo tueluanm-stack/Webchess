@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cờ Vua - Trò Chơi Thông Minh</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #0f0c29 0%, #302b63 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      color: #fff;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 30px;
+      text-shadow: 2px 2px 8px rgba(0,0,0,0.8);
+      letter-spacing: 2px;
+    }
+
+    .container {
+      display: flex;
+      gap: 30px;
+      max-width: 1400px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .board {
+      display: inline-grid;
+      grid-template-columns: repeat(8, 60px);
+      grid-template-rows: repeat(8, 60px);
+      gap: 0;
+      border: 6px solid #8b4513;
+      border-radius: 8px;
+      box-shadow: 0 15px 50px rgba(0,0,0,0.6);
+    }
+
+    .square {
+      width: 60px;
+      height: 60px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 40px;
+      cursor: pointer;
+      user-select: none;
+      position: relative;
+    }
+
+    .square.light {
+      background: #f0d9b5;
+    }
+
+    .square.dark {
+      background: #b58863;
+    }
+
+    .square.selected {
+      background: #7fc97f !important;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
+    }
+
+    .square.last-move {
+      background: rgba(255, 255, 0, 0.5) !important;
+    }
+
+    .square.check {
+      background: rgba(255, 0, 0, 0.6) !important;
+      box-shadow: inset 0 0 15px rgba(255, 0, 0, 0.8);
+    }
+
+    .square.valid-move::after {
+      content: '';
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      background: radial-gradient(circle, #00aa00 0%, #00aa00 30%, transparent 70%);
+      border-radius: 50%;
+    }
+
+    .square.valid-capture::after {
+      content: '';
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      border: 2px solid #ff6600;
+      border-radius: 50%;
+    }
+
+    .controls {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(0,255,136,0.2);
+      border-radius: 12px;
+      padding: 25px;
+      min-width: 300px;
+      max-width: 380px;
+      backdrop-filter: blur(10px);
+    }
+
+    .controls h2 {
+      margin-bottom: 20px;
+      color: #00ff88;
+      text-shadow: 0 0 10px rgba(0,255,136,0.5);
+    }
+
+    .info-box {
+      background: rgba(0,255,136,0.15);
+      border: 2px solid rgba(0,255,136,0.4);
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .setting-item {
+      margin-bottom: 15px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .setting-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 5px;
+      font-size: 0.95rem;
+    }
+
+    .toggle {
+      width: 40px;
+      height: 22px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 11px;
+      cursor: pointer;
+      position: relative;
+      border: 1px solid rgba(0,255,136,0.3);
+      transition: all 0.3s;
+    }
+
+    .toggle.active {
+      background: rgba(0,255,136,0.4);
+      border-color: #00ff88;
+    }
+
+    .toggle-dot {
+      width: 18px;
+      height: 18px;
+      background: #fff;
+      border-radius: 50%;
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      transition: left 0.3s;
+    }
+
+    .toggle.active .toggle-dot {
+      left: 20px;
+    }
+
+    .small-text {
+      font-size: 0.8rem;
+      opacity: 0.7;
+      display: block;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      flex: 1;
+      min-width: 100px;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #00ff88, #00cc66);
+      color: #000;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0,255,136,0.6);
+    }
+
+    .btn-secondary {
+      background: rgba(0,255,136,0.1);
+      color: #00ff88;
+      border: 1px solid rgba(0,255,136,0.3);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(0,255,136,0.2);
+    }
+
+    .btn-small {
+      padding: 8px 12px;
+      font-size: 0.85rem;
+    }
+
+    .move-history {
+      background: rgba(255,255,255,0.05);
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 15px;
+      max-height: 120px;
+      overflow-y: auto;
+      font-size: 0.8rem;
+    }
+
+    .move-history h4 {
+      color: #00ff88;
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+    }
+
+    .move-item {
+      display: inline-block;
+      background: rgba(0,255,136,0.15);
+      padding: 3px 6px;
+      margin: 2px;
+      border-radius: 3px;
+      border: 1px solid rgba(0,255,136,0.3);
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+
+      .controls {
+        min-width: 100%;
+        max-width: 100%;
+      }
+
+      .board {
+        grid-template-columns: repeat(8, 50px);
+        grid-template-rows: repeat(8, 50px);
+      }
+
+      .square {
+        width: 50px;
+        height: 50px;
+        font-size: 32px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>♔ CỜ VUA ♚</h1>
+
+  <div class="container">
+    <div class="board" id="board"></div>
+
+    <div class="controls">
+      <h2>Bảng Điều Khiển</h2>
+
+      <div class="info-box" id="turn">Lượt: ♔ Trắng</div>
+      <div class="info-box" id="status">Đang chơi</div>
+
+      <h3 style="color: #00ff88; margin-top: 20px; margin-bottom: 15px; font-size: 0.95rem;">⚙️ CÀI ĐẶT LUẬT</h3>
+
+      <div class="setting-item">
+        <div class="setting-label">
+          <span>Báo Chiếu (Check)</span>
+          <div class="toggle active" id="checkToggle" onclick="toggleSetting('checkDetection', this)">
+            <div class="toggle-dot"></div>
+          </div>
+        </div>
+        <span class="small-text">Cảnh báo khi vua bị chiếu</span>
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-label">
+          <span>Ăn Vua</span>
+          <div class="toggle" id="kingToggle" onclick="toggleSetting('kingCapture', this)">
+            <div class="toggle-dot"></div>
+          </div>
+        </div>
+        <span class="small-text">Cho phép ăn vua khi không báo</span>
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-label">
+          <span>Nhập Thành (Castling)</span>
+          <div class="toggle active" id="castlingToggle" onclick="toggleSetting('castling', this)">
+            <div class="toggle-dot"></div>
+          </div>
+        </div>
+        <span class="small-text">Cho phép nhập thành cả hai bên</span>
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-label">
+          <span>Tốt Qua Đường (En Passant)</span>
+          <div class="toggle active" id="enPassantToggle" onclick="toggleSetting('enPassant', this)">
+            <div class="toggle-dot"></div>
+          </div>
+        </div>
+        <span class="small-text">Cho phép tốt qua đường</span>
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-label">
+          <span>Hiển Thị Nước Hợp Lệ</span>
+          <div class="toggle active" id="validToggle" onclick="toggleSetting('showValidMoves', this)">
+            <div class="toggle-dot"></div>
+          </div>
+        </div>
+        <span class="small-text">Hiển thị các nước đi có thể</span>
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-label">
+          <span>Nước Đi Cuối</span>
+          <div class="toggle active" id="lastToggle" onclick="toggleSetting('showLastMove', this)">
+            <div class="toggle-dot"></div>
+          </div>
+        </div>
+        <span class="small-text">Tô sáng nước đi trước</span>
+      </div>
+
+      <div class="setting-item">
+        <div class="setting-label">
+          <span>Âm Thanh</span>
+          <div class="toggle active" id="soundToggle" onclick="toggleSetting('sound', this)">
+            <div class="toggle-dot"></div>
+          </div>
+        </div>
+        <span class="small-text">Âm thanh di chuyển quân</span>
+      </div>
+
+      <div class="setting-item" style="border-bottom: none;">
+        <div class="setting-label">
+          <span>Chế Độ:</span>
+          <span id="gameMode">2 Người</span>
+        </div>
+      </div>
+
+      <div class="button-group">
+        <button class="btn-primary" onclick="newGame()">Ván Mới</button>
+        <button class="btn-secondary btn-small" onclick="flipBoard()">Xoay</button>
+        <button class="btn-secondary btn-small" onclick="undoMove()">Hoàn tác</button>
+      </div>
+
+      <div class="move-history">
+        <h4>Lịch Sử Nước Đi</h4>
+        <div id="history"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const PIECES = {
+      wK: '♔', wQ: '♕', wR: '♖', wB: '♗', wN: '♘', wP: '♙',
+      bK: '♚', bQ: '♛', bR: '♜', bB: '♝', bN: '♞', bP: '♟'
+    };
+
+    const PIECE_VALUES = { P: 1, N: 3, B: 3, R: 5, Q: 9, K: 100 };
+
+    let settings = {
+      checkDetection: true,
+      kingCapture: false,
+      castling: true,
+      enPassant: true,
+      showValidMoves: true,
+      showLastMove: true,
+      sound: true
+    };
+
+    let game = {
+      board: [],
+      turn: 'white',
+      selected: null,
+      validMoves: [],
+      history: [],
+      lastMove: null,
+      boardHistory: [],
+      isFlipped: false
+    };
+
+    function initBoard() {
+      game.board = [
+        ['bR', 'bN', 'bB', 'bQ', 'bK', 'bB', 'bN', 'bR'],
+        ['bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP'],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP'],
+        ['wR', 'wN', 'wB', 'wQ', 'wK', 'wB', 'wN', 'wR']
+      ];
+      game.turn = 'white';
+      game.selected = null;
+      game.validMoves = [];
+      game.history = [];
+      game.lastMove = null;
+      game.boardHistory = [];
+    }
+
+    function render() {
+      const board = document.getElementById('board');
+      board.innerHTML = '';
+
+      for (let r = 0; r < 8; r++) {
+        for (let c = 0; c < 8; c++) {
+          const row = game.isFlipped ? 7 - r : r;
+          const col = game.isFlipped ? 7 - c : c;
+
+          const sq = document.createElement('div');
+          sq.className = `square ${(row + col) % 2 === 0 ? 'light' : 'dark'}`;
+          sq.dataset.row = row;
+          sq.dataset.col = col;
+
+          const piece = game.board[row][col];
+          if (piece) sq.textContent = PIECES[piece];
+
+          if (game.lastMove && settings.showLastMove) {
+            if ((row === game.lastMove.fr && col === game.lastMove.fc) ||
+                (row === game.lastMove.tr && col === game.lastMove.tc)) {
+              sq.classList.add('last-move');
+            }
+          }
+
+          if (game.selected && game.selected.r === row && game.selected.c === col) {
+            sq.classList.add('selected');
+          }
+
+          if (settings.showValidMoves) {
+            const valid = game.validMoves.find(m => m.r === row && m.c === col);
+            if (valid) {
+              if (game.board[row][col]) {
+                sq.classList.add('valid-capture');
+              } else {
+                sq.classList.add('valid-move');
+              }
+            }
+          }
+
+          if (settings.checkDetection && isInCheck(game.turn)) {
+            const king = findKing(game.turn);
+            if (king && king.r === row && king.c === col) {
+              sq.classList.add('check');
+            }
+          }
+
+          sq.addEventListener('click', () => click(row, col));
+          board.appendChild(sq);
+        }
+      }
+
+      document.getElementById('turn').textContent = `Lượt: ${game.turn === 'white' ? '♔ Trắng' : '♚ Đen'}`;
+      
+      const hist = game.history.map((m, i) => `<span class="move-item">${m}</span>`).join('');
+      document.getElementById('history').innerHTML = hist || '<span style="opacity: 0.5;">Chưa có nước đi</span>';
+    }
+
+    function click(r, c) {
+      const piece = game.board[r][c];
+      const color = piece ? piece[0] === 'w' ? 'white' : 'black' : null;
+
+      if (game.selected) {
+        const isValid = game.validMoves.some(m => m.r === r && m.c === c);
+        if (isValid) {
+          move(game.selected.r, game.selected.c, r, c);
+          game.selected = null;
+          game.validMoves = [];
+          render();
+        } else if (color === game.turn) {
+          game.selected = { r, c };
+          game.validMoves = getMoves(r, c);
+          render();
+        } else {
+          game.selected = null;
+          game.validMoves = [];
+          render();
+        }
+      } else {
+        if (piece && color === game.turn) {
+          game.selected = { r, c };
+          game.validMoves = getMoves(r, c);
+          render();
+        }
+      }
+    }
+
+    function getMoves(r, c) {
+      const piece = game.board[r][c];
+      if (!piece) return [];
+
+      const type = piece[1];
+      const color = piece[0] === 'w' ? 'white' : 'black';
+      let moves = [];
+
+      if (type === 'P') moves = pawnMoves(r, c, color);
+      else if (type === 'N') moves = knightMoves(r, c, color);
+      else if (type === 'B') moves = bishopMoves(r, c, color);
+      else if (type === 'R') moves = rookMoves(r, c, color);
+      else if (type === 'Q') moves = queenMoves(r, c, color);
+      else if (type === 'K') moves = kingMoves(r, c, color);
+
+      return moves.filter(m => !wouldCheck(r, c, m.r, m.c, color));
+    }
+
+    function pawnMoves(r, c, color) {
+      const moves = [];
+      const dir = color === 'white' ? -1 : 1;
+      const start = color === 'white' ? 6 : 1;
+
+      if (inBounds(r + dir, c) && !game.board[r + dir][c]) {
+        moves.push({ r: r + dir, c });
+        if (r === start && !game.board[r + 2 * dir][c]) {
+          moves.push({ r: r + 2 * dir, c });
+        }
+      }
+
+      for (const dc of [-1, 1]) {
+        const nr = r + dir, nc = c + dc;
+        if (inBounds(nr, nc)) {
+          const t = game.board[nr][nc];
+          if (t && (t[0] === 'w' ? 'white' : 'black') !== color) {
+            moves.push({ r: nr, c: nc });
+          }
+        }
+      }
+
+      return moves;
+    }
+
+    function knightMoves(r, c, color) {
+      const moves = [];
+      const offs = [[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]];
+
+      for (const [dr, dc] of offs) {
+        const nr = r + dr, nc = c + dc;
+        if (inBounds(nr, nc)) {
+          const t = game.board[nr][nc];
+          if (!t || (t[0] === 'w' ? 'white' : 'black') !== color) {
+            moves.push({ r: nr, c: nc });
+          }
+        }
+      }
+
+      return moves;
+    }
+
+    function slideMoves(r, c, color, dirs) {
+      const moves = [];
+      for (const [dr, dc] of dirs) {
+        for (let i = 1; i < 8; i++) {
+          const nr = r + i * dr, nc = c + i * dc;
+          if (!inBounds(nr, nc)) break;
+          const t = game.board[nr][nc];
+          if (!t) {
+            moves.push({ r: nr, c: nc });
+          } else {
+            if ((t[0] === 'w' ? 'white' : 'black') !== color) {
+              moves.push({ r: nr, c: nc });
+            }
+            break;
+          }
+        }
+      }
+      return moves;
+    }
+
+    function bishopMoves(r, c, color) {
+      return slideMoves(r, c, color, [[1,1],[1,-1],[-1,1],[-1,-1]]);
+    }
+
+    function rookMoves(r, c, color) {
+      return slideMoves(r, c, color, [[0,1],[0,-1],[1,0],[-1,0]]);
+    }
+
+    function queenMoves(r, c, color) {
+      return slideMoves(r, c, color, [[0,1],[0,-1],[1,0],[-1,0],[1,1],[1,-1],[-1,1],[-1,-1]]);
+    }
+
+    function kingMoves(r, c, color) {
+      const moves = [];
+      for (let dr = -1; dr <= 1; dr++) {
+        for (let dc = -1; dc <= 1; dc++) {
+          if (dr === 0 && dc === 0) continue;
+          const nr = r + dr, nc = c + dc;
+          if (inBounds(nr, nc)) {
+            const t = game.board[nr][nc];
+            if (!t || (t[0] === 'w' ? 'white' : 'black') !== color) {
+              if (!settings.kingCapture && t && t[1] === 'K') continue;
+              moves.push({ r: nr, c: nc });
+            }
+          }
+        }
+      }
+      return moves;
+    }
+
+    function move(fr, fc, tr, tc) {
+      game.boardHistory.push(game.board.map(row => [...row]));
+      const piece = game.board[fr][fc];
+      game.board[tr][tc] = piece;
+      game.board[fr][fc] = '';
+      game.lastMove = { fr, fc, tr, tc };
+      game.history.push(`${String.fromCharCode(97 + fc)}${8 - fr}→${String.fromCharCode(97 + tc)}${8 - tr}`);
+      if (settings.sound) playSound();
+      game.turn = game.turn === 'white' ? 'black' : 'white';
+    }
+
+    function isInCheck(color) {
+      const king = findKing(color);
+      if (!king) return false;
+      const enemy = color === 'white' ? 'black' : 'white';
+      const eprefix = enemy === 'white' ? 'w' : 'b';
+
+      for (let r = 0; r < 8; r++) {
+        for (let c = 0; c < 8; c++) {
+          const p = game.board[r][c];
+          if (!p || p[0] !== eprefix) continue;
+
+          const type = p[1];
+          if (type === 'P') {
+            const dir = enemy === 'white' ? -1 : 1;
+            if (r + dir === king.r && (c - 1 === king.c || c + 1 === king.c)) return true;
+          } else if (type === 'N') {
+            const offs = [[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]];
+            if (offs.some(([dr, dc]) => r + dr === king.r && c + dc === king.c)) return true;
+          } else if (type === 'K') {
+            if (Math.abs(r - king.r) <= 1 && Math.abs(c - king.c) <= 1) return true;
+          } else if (['B', 'R', 'Q'].includes(type)) {
+            let dirs = type === 'B' ? [[1,1],[1,-1],[-1,1],[-1,-1]] : type === 'R' ? [[0,1],[0,-1],[1,0],[-1,0]] : [[0,1],[0,-1],[1,0],[-1,0],[1,1],[1,-1],[-1,1],[-1,-1]];
+            for (const [dr, dc] of dirs) {
+              for (let i = 1; i < 8; i++) {
+                const nr = r + i * dr, nc = c + i * dc;
+                if (!inBounds(nr, nc)) break;
+                if (nr === king.r && nc === king.c) return true;
+                if (game.board[nr][nc]) break;
+              }
+            }
+          }
+        }
+      }
+      return false;
+    }
+
+    function wouldCheck(fr, fc, tr, tc, color) {
+      const p = game.board[fr][fc];
+      const t = game.board[tr][tc];
+      game.board[tr][tc] = p;
+      game.board[fr][fc] = '';
+      const inCheck = isInCheck(color);
+      game.board[fr][fc] = p;
+      game.board[tr][tc] = t;
+      return inCheck;
+    }
+
+    function findKing(color) {
+      const pre = color === 'white' ? 'w' : 'b';
+      for (let r = 0; r < 8; r++) {
+        for (let c = 0; c < 8; c++) {
+          if (game.board[r][c] === pre + 'K') {
+            return { r, c };
+          }
+        }
+      }
+      return null;
+    }
+
+    function inBounds(r, c) {
+      return r >= 0 && r < 8 && c >= 0 && c < 8;
+    }
+
+    function toggleSetting(key, elem) {
+      settings[key] = !settings[key];
+      elem.classList.toggle('active');
+      render();
+    }
+
+    function flipBoard() {
+      game.isFlipped = !game.isFlipped;
+      render();
+    }
+
+    function undoMove() {
+      if (game.boardHistory.length === 0) return;
+      game.board = game.boardHistory.pop();
+      game.history.pop();
+      game.turn = game.turn === 'white' ? 'black' : 'white';
+      game.lastMove = null;
+      game.selected = null;
+      game.validMoves = [];
+      render();
+    }
+
+    function newGame() {
+      initBoard();
+      render();
+    }
+
+    function playSound() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.frequency.value = 800;
+        osc.type = 'sine';
+        gain.gain.setValueAtTime(0.3, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.1);
+      } catch (e) {}
+    }
+
+    initBoard();
+    render();
+  </script>
+</body>
+</html>
