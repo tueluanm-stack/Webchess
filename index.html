@@ -89,6 +89,11 @@
       background: rgba(255, 255, 0, 0.5) !important;
     }
 
+    .square.check {
+      background: rgba(255, 0, 0, 0.6) !important;
+      box-shadow: inset 0 0 15px rgba(255, 0, 0, 0.8);
+    }
+
     .square.valid-move::after {
       content: '';
       position: absolute;
@@ -99,121 +104,114 @@
       box-shadow: 0 0 8px rgba(0,255,0,0.6);
     }
 
-    .square.valid-capture {
-      border: 3px solid #ff4444;
-      box-shadow: inset 0 0 10px rgba(255,0,0,0.3);
-    }
-
-    .square.check {
-      background: #ff6b6b !important;
-      animation: pulse 0.6s infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { background: #ff6b6b !important; }
-      50% { background: #ff8888 !important; }
-    }
-
-    .square:hover {
-      filter: brightness(1.15);
-    }
-
-    .piece {
-      text-shadow: 2px 2px 3px rgba(0,0,0,0.5);
-      transition: transform 0.1s;
-      cursor: grab;
-    }
-
-    .piece:active {
-      cursor: grabbing;
+    .square.valid-capture::after {
+      content: '';
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      border: 2px solid #ff6600;
+      border-radius: 50%;
+      box-shadow: 0 0 8px rgba(255, 102, 0, 0.8);
     }
 
     /* CONTROL PANEL */
     .control-panel {
       background: rgba(255,255,255,0.08);
-      padding: 25px;
+      border: 1px solid rgba(0,255,136,0.2);
       border-radius: 12px;
+      padding: 25px;
+      min-width: 320px;
+      max-width: 400px;
       backdrop-filter: blur(10px);
-      min-width: 350px;
-      max-width: 450px;
-      border: 1px solid rgba(255,255,255,0.1);
     }
 
     .control-panel h2 {
-      font-size: 1.3rem;
       margin-bottom: 15px;
+      color: #00ff88;
+      text-shadow: 0 0 10px rgba(0,255,136,0.5);
+    }
+
+    .turn-display {
+      background: rgba(0,255,136,0.15);
+      border: 2px solid rgba(0,255,136,0.4);
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      font-weight: bold;
+      font-size: 1.1rem;
       text-align: center;
-      border-bottom: 2px solid rgba(255,255,255,0.2);
-      padding-bottom: 10px;
     }
 
     .info-row {
       display: flex;
       justify-content: space-between;
-      margin-bottom: 12px;
-      padding: 8px;
-      background: rgba(255,255,255,0.05);
-      border-radius: 6px;
-      align-items: center;
+      margin-bottom: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
     }
 
     .info-label {
-      font-size: 0.9rem;
-      opacity: 0.8;
+      opacity: 0.7;
     }
 
     .info-value {
-      font-weight: bold;
       color: #00ff88;
-    }
-
-    .turn-display {
-      background: rgba(0,255,136,0.2);
-      padding: 12px;
-      border-radius: 8px;
-      margin-bottom: 15px;
-      text-align: center;
-      border: 1px solid rgba(0,255,136,0.4);
-      font-size: 1.1rem;
       font-weight: bold;
     }
 
-    /* SETTINGS SECTION */
+    /* SETTINGS */
     .settings-section {
-      margin-top: 20px;
-      padding-top: 15px;
-      border-top: 1px solid rgba(255,255,255,0.2);
+      margin: 20px 0;
+      padding: 15px;
+      background: rgba(0,0,0,0.3);
+      border-radius: 8px;
+      border-left: 3px solid #00ff88;
     }
 
     .settings-section h3 {
-      font-size: 1rem;
-      margin-bottom: 10px;
+      margin-bottom: 15px;
       color: #00ff88;
+      font-size: 1rem;
     }
 
     .setting-item {
-      margin-bottom: 10px;
-      padding: 8px;
-      background: rgba(255,255,255,0.03);
-      border-radius: 6px;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .setting-item:last-child {
+      border-bottom: none;
     }
 
     .setting-label {
       display: flex;
+      justify-content: space-between;
       align-items: center;
-      gap: 10px;
-      margin-bottom: 5px;
-      font-size: 0.9rem;
+      cursor: pointer;
+      user-select: none;
     }
 
     .checkbox-switch {
-      width: 50px;
-      height: 28px;
-      background: rgba(0,0,0,0.3);
-      border-radius: 14px;
-      border: 2px solid rgba(255,255,255,0.2);
-      cursor: pointer;
+      width: 40px;
+      height: 24px;
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 12px;
       position: relative;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .checkbox-switch::after {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: white;
+      border-radius: 10px;
+      left: 2px;
+      top: 2px;
       transition: all 0.3s;
     }
 
@@ -222,115 +220,100 @@
       border-color: #00ff88;
     }
 
-    .checkbox-switch::after {
-      content: '';
-      position: absolute;
-      width: 22px;
-      height: 22px;
-      background: white;
-      border-radius: 50%;
-      top: 2px;
-      left: 2px;
-      transition: left 0.3s;
-    }
-
     .checkbox-switch.active::after {
-      left: 26px;
+      left: 18px;
     }
 
     .slider-control {
       display: flex;
-      gap: 10px;
       align-items: center;
-      margin-top: 5px;
+      gap: 10px;
+      margin-top: 8px;
     }
 
     .slider-control input[type="range"] {
       flex: 1;
-      height: 6px;
-      border-radius: 3px;
-      background: linear-gradient(90deg, #ff4444, #ffaa00, #00ff88);
+      height: 4px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 2px;
       outline: none;
       -webkit-appearance: none;
     }
 
     .slider-control input[type="range"]::-webkit-slider-thumb {
       -webkit-appearance: none;
-      width: 18px;
-      height: 18px;
+      width: 16px;
+      height: 16px;
+      background: #00ff88;
       border-radius: 50%;
-      background: white;
       cursor: pointer;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+      box-shadow: 0 0 8px rgba(0,255,136,0.6);
     }
 
     .slider-control input[type="range"]::-moz-range-thumb {
-      width: 18px;
-      height: 18px;
+      width: 16px;
+      height: 16px;
+      background: #00ff88;
       border-radius: 50%;
-      background: white;
       cursor: pointer;
       border: none;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+      box-shadow: 0 0 8px rgba(0,255,136,0.6);
     }
 
     .slider-value {
-      min-width: 50px;
-      text-align: right;
-      font-weight: bold;
+      min-width: 80px;
       color: #00ff88;
+      font-size: 0.9rem;
+      text-align: right;
     }
 
     /* BUTTONS */
     .button-group {
       display: flex;
       gap: 10px;
-      margin-top: 15px;
       flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 15px;
     }
 
     .btn {
-      flex: 1;
-      min-width: 100px;
       padding: 10px 15px;
       border: none;
       border-radius: 6px;
       cursor: pointer;
       font-weight: bold;
       transition: all 0.3s;
-      font-size: 0.9rem;
-      text-transform: uppercase;
-      letter-spacing: 1px;
+      font-size: 0.95rem;
     }
 
     .btn-primary {
-      background: linear-gradient(135deg, #00ff88 0%, #00cc6a 100%);
+      background: linear-gradient(135deg, #00ff88, #00cc66);
       color: #000;
+      box-shadow: 0 4px 15px rgba(0,255,136,0.4);
     }
 
     .btn-primary:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(0,255,136,0.4);
+      box-shadow: 0 6px 20px rgba(0,255,136,0.6);
     }
 
     .btn-secondary {
-      background: rgba(255,255,255,0.15);
-      color: white;
-      border: 1px solid rgba(255,255,255,0.3);
+      background: rgba(0,255,136,0.1);
+      color: #00ff88;
+      border: 1px solid rgba(0,255,136,0.3);
     }
 
     .btn-secondary:hover {
-      background: rgba(255,255,255,0.25);
-      border-color: rgba(255,255,255,0.5);
+      background: rgba(0,255,136,0.2);
+      border-color: #00ff88;
     }
 
     .btn-small {
-      padding: 6px 12px;
-      font-size: 0.8rem;
-      min-width: 80px;
+      padding: 8px 12px;
+      font-size: 0.85rem;
     }
 
-    /* MODALS */
+    /* MODAL */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -349,54 +332,42 @@
     }
 
     .modal-content {
-      background: linear-gradient(135deg, #1a1a3e 0%, #2a2a5e 100%);
-      padding: 30px;
-      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(48,43,99,0.95), rgba(15,12,41,0.95));
       border: 2px solid #00ff88;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+      border-radius: 12px;
+      padding: 40px;
       text-align: center;
-      max-width: 500px;
-      animation: slideIn 0.3s ease;
-    }
-
-    @keyframes slideIn {
-      from {
-        transform: scale(0.8);
-        opacity: 0;
-      }
-      to {
-        transform: scale(1);
-        opacity: 1;
-      }
+      max-width: 400px;
+      box-shadow: 0 20px 60px rgba(0,255,136,0.2);
     }
 
     .modal-content h2 {
-      font-size: 1.8rem;
+      font-size: 2rem;
       margin-bottom: 15px;
       color: #00ff88;
     }
 
     .modal-content p {
-      margin-bottom: 20px;
-      opacity: 0.9;
+      margin-bottom: 25px;
+      font-size: 1.1rem;
     }
 
     .mode-selection {
       display: flex;
       gap: 15px;
+      margin-bottom: 25px;
       justify-content: center;
-      margin-bottom: 20px;
     }
 
     .mode-btn {
-      padding: 15px 25px;
-      background: rgba(255,255,255,0.1);
-      border: 2px solid rgba(255,255,255,0.2);
-      color: white;
+      padding: 12px 20px;
+      background: rgba(0,255,136,0.1);
+      border: 2px solid rgba(0,255,136,0.2);
+      color: #00ff88;
       border-radius: 8px;
       cursor: pointer;
-      transition: all 0.3s;
       font-weight: bold;
+      transition: all 0.3s;
     }
 
     .mode-btn:hover {
@@ -638,7 +609,8 @@
       lastMove: null,
       gameMode: 'pvp',
       isFlipped: false,
-      isAIThinking: false
+      isAIThinking: false,
+      boardHistory: []
     };
 
     // ==================== INITIALIZATION ====================
@@ -690,6 +662,7 @@
       gameState.lastMove = null;
       gameState.isFlipped = false;
       gameState.isAIThinking = false;
+      gameState.boardHistory = [];
     }
 
     // ==================== RENDERING ====================
@@ -931,6 +904,9 @@
     }
 
     function makeMove(fr, fc, tr, tc) {
+      // Save board state for undo
+      gameState.boardHistory.push(gameState.board.map(row => [...row]));
+
       const piece = gameState.board[fr][fc];
       gameState.board[tr][tc] = piece;
       gameState.board[fr][fc] = '';
@@ -951,10 +927,10 @@
       const king = findKing(color);
       if (!king) return false;
       const enemy = color === 'white' ? 'black' : 'white';
-      return isSquareAttacked(king.r, king.c, enemy);
+      return isSquareAttackedDirect(king.r, king.c, enemy);
     }
 
-    function isSquareAttacked(r, c, byColor) {
+    function isSquareAttackedDirect(r, c, byColor) {
       const prefix = byColor === 'white' ? 'w' : 'b';
 
       for (let row = 0; row < 8; row++) {
@@ -962,8 +938,44 @@
           const piece = gameState.board[row][col];
           if (!piece || piece[0] !== prefix) continue;
 
-          const moves = getValidMoves(row, col);
-          if (moves.some(m => m.r === r && m.c === c)) return true;
+          // Get raw moves without filter to avoid recursion
+          const type = piece[1];
+          let canAttack = false;
+
+          if (type === 'P') {
+            const dir = byColor === 'white' ? -1 : 1;
+            for (const dc of [-1, 1]) {
+              if (row + dir === r && col + dc === c) canAttack = true;
+            }
+          } else if (type === 'N') {
+            const offsets = [[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]];
+            for (const [dr, dc] of offsets) {
+              if (row + dr === r && col + dc === c) canAttack = true;
+            }
+          } else if (type === 'K') {
+            for (let dr = -1; dr <= 1; dr++) {
+              for (let dc = -1; dc <= 1; dc++) {
+                if (dr === 0 && dc === 0) continue;
+                if (row + dr === r && col + dc === c) canAttack = true;
+              }
+            }
+          } else if (['B', 'R', 'Q'].includes(type)) {
+            let dirs = [];
+            if (type === 'B') dirs = [[1,1],[1,-1],[-1,1],[-1,-1]];
+            else if (type === 'R') dirs = [[0,1],[0,-1],[1,0],[-1,0]];
+            else dirs = [[0,1],[0,-1],[1,0],[-1,0],[1,1],[1,-1],[-1,1],[-1,-1]];
+
+            for (const [dr, dc] of dirs) {
+              for (let i = 1; i < 8; i++) {
+                const nr = row + i * dr, nc = col + i * dc;
+                if (!isInBounds(nr, nc)) break;
+                if (nr === r && nc === c) canAttack = true;
+                if (gameState.board[nr][nc]) break;
+              }
+            }
+          }
+
+          if (canAttack) return true;
         }
       }
       return false;
@@ -1004,7 +1016,7 @@
 
       for (let r = 0; r < 8; r++) {
         for (let c = 0; c < 8; c++) {
-          if (gameState.board[r][c] && gameState.board[r][c][0] === prefix[0]) {
+          if (gameState.board[r][c] && gameState.board[r][c][0] === prefix) {
             const valid = getValidMoves(r, c);
             for (const m of valid) {
               moves.push({ fr: r, fc: c, tr: m.r, tc: m.c });
@@ -1060,9 +1072,13 @@
     }
 
     function undoMove() {
-      if (gameState.moveHistory.length === 0) return;
+      if (gameState.boardHistory.length === 0) return;
+      gameState.board = gameState.boardHistory.pop();
       gameState.moveHistory.pop();
-      initBoard();
+      gameState.currentTurn = gameState.currentTurn === 'white' ? 'black' : 'white';
+      gameState.lastMove = null;
+      gameState.selectedSquare = null;
+      gameState.validMoves = [];
       renderBoard();
       updateUI();
     }
@@ -1078,22 +1094,25 @@
     }
 
     function playSound() {
-      // Simple beep sound
-      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
-      
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-      
-      oscillator.frequency.value = 800;
-      oscillator.type = 'sine';
-      
-      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
-      
-      oscillator.start(audioContext.currentTime);
-      oscillator.stop(audioContext.currentTime + 0.1);
+      try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.frequency.value = 800;
+        oscillator.type = 'sine';
+        
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.1);
+      } catch (e) {
+        console.log("[v0] Sound error:", e);
+      }
     }
 
     function isInBounds(r, c) {
