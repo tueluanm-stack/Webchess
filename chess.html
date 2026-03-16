@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cờ Vua - Chess Game</title>
+  <title>Cờ Vua Online</title>
   <style>
     * {
       margin: 0;
@@ -39,98 +39,113 @@
       justify-content: center;
     }
 
+    .board-container {
+      position: relative;
+    }
+
     .board {
-      display: inline-grid;
-      grid-template-columns: repeat(8, 60px);
-      grid-template-rows: repeat(8, 60px);
+      display: grid;
+      grid-template-columns: repeat(8, 70px);
+      grid-template-rows: repeat(8, 70px);
       gap: 0;
-      border: 6px solid #8b4513;
+      border: 8px solid #8b6914;
       border-radius: 8px;
-      box-shadow: 0 15px 50px rgba(0,0,0,0.6);
+      box-shadow: 0 15px 50px rgba(0,0,0,0.8);
+      background: #8b6914;
     }
 
     .square {
-      width: 60px;
-      height: 60px;
+      width: 70px;
+      height: 70px;
       display: flex;
       justify-content: center;
       align-items: center;
-      font-size: 40px;
+      font-size: 50px;
       cursor: pointer;
       user-select: none;
       position: relative;
-      transition: background 0.1s;
+      transition: background 0.15s ease;
+      border: none;
+      padding: 0;
     }
 
     .square.light {
       background: #f0d9b5;
+      color: #333;
     }
 
     .square.dark {
       background: #b58863;
+      color: #fff;
     }
 
     .square.selected {
       background: #7fc97f !important;
-      box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
+      box-shadow: inset 0 0 15px rgba(0,0,0,0.3);
     }
 
     .square.last-move {
-      background: rgba(255, 255, 0, 0.5) !important;
+      background: rgba(255, 255, 0, 0.6) !important;
     }
 
     .square.check {
-      background: rgba(255, 0, 0, 0.6) !important;
-      box-shadow: inset 0 0 15px rgba(255, 0, 0, 0.8);
+      background: rgba(255, 0, 0, 0.7) !important;
+      box-shadow: inset 0 0 20px rgba(255, 0, 0, 0.9);
     }
 
     .square.valid-move::after {
       content: '';
       position: absolute;
-      width: 16px;
-      height: 16px;
-      background: radial-gradient(circle, #00aa00 0%, #00aa00 30%, transparent 70%);
+      width: 18px;
+      height: 18px;
+      background: radial-gradient(circle, #00dd00 0%, #00dd00 35%, transparent 70%);
       border-radius: 50%;
+      opacity: 0.8;
     }
 
     .square.valid-capture::after {
       content: '';
       position: absolute;
-      width: 14px;
-      height: 14px;
-      border: 2px solid #ff6600;
+      width: 16px;
+      height: 16px;
+      border: 3px solid #ff8800;
       border-radius: 50%;
+      opacity: 0.8;
     }
 
     .controls {
       background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(0,255,136,0.2);
+      border: 2px solid rgba(0,255,136,0.3);
       border-radius: 12px;
-      padding: 25px;
-      min-width: 300px;
-      max-width: 380px;
+      padding: 30px;
+      min-width: 320px;
+      max-width: 400px;
       backdrop-filter: blur(10px);
+      max-height: 600px;
+      overflow-y: auto;
     }
 
     .controls h2 {
       margin-bottom: 20px;
       color: #00ff88;
       text-shadow: 0 0 10px rgba(0,255,136,0.5);
+      font-size: 1.3rem;
     }
 
     .info-box {
-      background: rgba(0,255,136,0.15);
-      border: 2px solid rgba(0,255,136,0.4);
+      background: rgba(0,255,136,0.2);
+      border: 2px solid rgba(0,255,136,0.5);
       padding: 12px;
       border-radius: 8px;
       margin-bottom: 15px;
       font-weight: bold;
       text-align: center;
+      font-size: 0.95rem;
     }
 
     .setting-item {
-      margin-bottom: 15px;
-      padding-bottom: 12px;
+      margin-bottom: 18px;
+      padding-bottom: 15px;
       border-bottom: 1px solid rgba(255,255,255,0.1);
     }
 
@@ -138,99 +153,105 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 5px;
+      margin-bottom: 6px;
       font-size: 0.95rem;
     }
 
     .toggle {
-      width: 40px;
-      height: 22px;
-      background: rgba(255,255,255,0.2);
-      border-radius: 11px;
+      width: 45px;
+      height: 24px;
+      background: rgba(100,100,100,0.5);
+      border-radius: 12px;
       cursor: pointer;
       position: relative;
-      transition: all 0.2s;
+      transition: all 0.3s;
+      border: 1px solid rgba(255,255,255,0.2);
     }
 
     .toggle.active {
-      background: #00aa00;
+      background: #00dd00;
+      border-color: #00aa00;
     }
 
     .toggle-dot {
-      width: 18px;
-      height: 18px;
+      width: 20px;
+      height: 20px;
       background: white;
       border-radius: 50%;
       position: absolute;
       top: 2px;
       left: 2px;
-      transition: left 0.2s;
+      transition: left 0.3s;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
     }
 
     .toggle.active .toggle-dot {
-      left: 20px;
+      left: 23px;
     }
 
     .small-text {
       font-size: 0.8rem;
       opacity: 0.7;
       display: block;
-      margin-top: 3px;
+      margin-top: 4px;
     }
 
     .button-group {
       display: flex;
-      gap: 10px;
-      margin-top: 20px;
+      gap: 12px;
+      margin-top: 25px;
       flex-wrap: wrap;
     }
 
     .btn-primary, .btn-secondary {
-      padding: 10px 15px;
+      padding: 11px 16px;
       border: none;
-      border-radius: 6px;
+      border-radius: 8px;
       cursor: pointer;
       font-weight: bold;
       transition: all 0.2s;
       font-size: 0.95rem;
+      flex: 1;
+      min-width: 80px;
     }
 
     .btn-primary {
       background: linear-gradient(135deg, #00ff88 0%, #00cc66 100%);
       color: #000;
-      flex: 1;
-      min-width: 100px;
+      font-weight: 700;
     }
 
     .btn-primary:hover {
       transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(0,255,136,0.4);
+      box-shadow: 0 5px 15px rgba(0,255,136,0.5);
     }
 
     .btn-secondary {
-      background: rgba(255,255,255,0.2);
+      background: rgba(100,150,255,0.3);
       color: #fff;
-      border: 1px solid rgba(255,255,255,0.3);
+      border: 1px solid rgba(100,150,255,0.5);
     }
 
     .btn-small {
-      padding: 8px 12px;
+      padding: 9px 12px;
       font-size: 0.85rem;
       flex: 0.5;
     }
 
     .btn-secondary:hover {
-      background: rgba(255,255,255,0.3);
+      background: rgba(100,150,255,0.5);
+      border-color: rgba(100,150,255,0.8);
     }
 
     .move-history {
-      margin-top: 20px;
-      background: rgba(0,0,0,0.3);
-      padding: 12px;
+      margin-top: 25px;
+      background: rgba(0,0,0,0.4);
+      padding: 15px;
       border-radius: 8px;
-      max-height: 200px;
+      max-height: 150px;
       overflow-y: auto;
       font-size: 0.9rem;
+      border: 1px solid rgba(0,255,136,0.2);
     }
 
     .move-history h4 {
@@ -241,16 +262,19 @@
 
     .move-item {
       display: inline-block;
-      background: rgba(0,255,136,0.2);
-      padding: 2px 6px;
-      border-radius: 3px;
-      margin: 2px;
+      background: rgba(0,255,136,0.25);
+      padding: 4px 8px;
+      border-radius: 4px;
+      margin: 3px 2px;
       font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      border: 1px solid rgba(0,255,136,0.3);
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 800px) {
       .container {
         flex-direction: column;
+        gap: 20px;
       }
 
       .controls {
@@ -266,7 +290,12 @@
       .square {
         width: 50px;
         height: 50px;
-        font-size: 32px;
+        font-size: 35px;
+      }
+
+      h1 {
+        font-size: 1.8rem;
+        margin-bottom: 20px;
       }
     }
   </style>
@@ -275,15 +304,17 @@
   <h1>♔ CỜ VUA ♚</h1>
 
   <div class="container">
-    <div class="board" id="board"></div>
+    <div class="board-container">
+      <div class="board" id="board"></div>
+    </div>
 
     <div class="controls">
-      <h2>Bảng Điều Khiển</h2>
+      <h2>⚙ Điều Khiển</h2>
 
       <div class="info-box" id="turn">Lượt: ♔ Trắng</div>
       <div class="info-box" id="status">Đang chơi</div>
 
-      <h3 style="color: #00ff88; margin-top: 20px; margin-bottom: 15px; font-size: 0.95rem;">⚙ CÀI ĐẶT LUẬT</h3>
+      <h3 style="color: #00ff88; margin: 25px 0 15px 0; font-size: 0.95rem;">⚙ CÀI ĐẶT LUẬT</h3>
 
       <div class="setting-item">
         <div class="setting-label">
@@ -312,7 +343,7 @@
             <div class="toggle-dot"></div>
           </div>
         </div>
-        <span class="small-text">Hiển thị các nước đi có thể</span>
+        <span class="small-text">Hiển thị điểm có thể đi</span>
       </div>
 
       <div class="setting-item">
@@ -322,7 +353,7 @@
             <div class="toggle-dot"></div>
           </div>
         </div>
-        <span class="small-text">Tô sáng nước đi trước</span>
+        <span class="small-text">Tô sáng nước vừa đi</span>
       </div>
 
       <div class="setting-item" style="border-bottom: none;">
@@ -332,7 +363,7 @@
             <div class="toggle-dot"></div>
           </div>
         </div>
-        <span class="small-text">Âm thanh di chuyển quân</span>
+        <span class="small-text">Âm thanh khi di chuyển</span>
       </div>
 
       <div class="button-group">
@@ -342,19 +373,19 @@
       </div>
 
       <div class="move-history">
-        <h4>Lịch Sử Nước Đi</h4>
-        <div id="history"></div>
+        <h4>📋 Lịch Sử Nước Đi</h4>
+        <div id="history" style="line-height: 1.6;"></div>
       </div>
     </div>
   </div>
 
   <script>
     const PIECES = {
-      wK: '♔', wQ: '♕', wR: '♖', wB: '♗', wN: '♘', wP: '♙',
-      bK: '♚', bQ: '♛', bR: '♜', bB: '♝', bN: '♞', bP: '♟'
+      'wK': '♔', 'wQ': '♕', 'wR': '♖', 'wB': '♗', 'wN': '♘', 'wP': '♙',
+      'bK': '♚', 'bQ': '♛', 'bR': '♜', 'bB': '♝', 'bN': '♞', 'bP': '♟'
     };
 
-    let settings = {
+    const settings = {
       checkDetection: true,
       kingCapture: false,
       showValidMoves: true,
@@ -362,7 +393,7 @@
       sound: true
     };
 
-    let game = {
+    const game = {
       board: [],
       turn: 'white',
       selected: null,
@@ -393,72 +424,91 @@
     }
 
     function render() {
-      const board = document.getElementById('board');
-      board.innerHTML = '';
+      const boardEl = document.getElementById('board');
+      boardEl.innerHTML = '';
 
       for (let r = 0; r < 8; r++) {
         for (let c = 0; c < 8; c++) {
-          const row = game.isFlipped ? 7 - r : r;
-          const col = game.isFlipped ? 7 - c : c;
+          const dispR = game.isFlipped ? 7 - r : r;
+          const dispC = game.isFlipped ? 7 - c : c;
 
           const sq = document.createElement('div');
-          sq.className = 'square ' + ((row + col) % 2 === 0 ? 'light' : 'dark');
-          sq.dataset.row = row;
-          sq.dataset.col = col;
+          sq.className = 'square ' + ((dispR + dispC) % 2 === 0 ? 'light' : 'dark');
+          sq.dataset.row = dispR;
+          sq.dataset.col = dispC;
 
-          const piece = game.board[row][col];
-          if (piece) sq.textContent = PIECES[piece];
+          const piece = game.board[dispR][dispC];
+          if (piece && PIECES[piece]) {
+            sq.textContent = PIECES[piece];
+          }
 
           if (game.lastMove && settings.showLastMove) {
-            if ((row === game.lastMove.fr && col === game.lastMove.fc) ||
-                (row === game.lastMove.tr && col === game.lastMove.tc)) {
+            if ((dispR === game.lastMove.fr && dispC === game.lastMove.fc) ||
+                (dispR === game.lastMove.tr && dispC === game.lastMove.tc)) {
               sq.classList.add('last-move');
             }
           }
 
-          if (game.selected && game.selected.r === row && game.selected.c === col) {
+          if (game.selected && game.selected.r === dispR && game.selected.c === dispC) {
             sq.classList.add('selected');
           }
 
-          if (settings.showValidMoves) {
-            const valid = game.validMoves.find(m => m.r === row && m.c === col);
-            if (valid) {
-              if (game.board[row][col]) {
-                sq.classList.add('valid-capture');
-              } else {
-                sq.classList.add('valid-move');
+          if (settings.showValidMoves && game.validMoves) {
+            for (let m of game.validMoves) {
+              if (m.r === dispR && m.c === dispC) {
+                if (game.board[dispR][dispC]) {
+                  sq.classList.add('valid-capture');
+                } else {
+                  sq.classList.add('valid-move');
+                }
+                break;
               }
             }
           }
 
           if (settings.checkDetection && isInCheck(game.turn)) {
             const king = findKing(game.turn);
-            if (king && king.r === row && king.c === col) {
+            if (king && king.r === dispR && king.c === dispC) {
               sq.classList.add('check');
             }
           }
 
           sq.addEventListener('click', function() {
-            click(row, col);
+            clickSquare(dispR, dispC);
           });
-          board.appendChild(sq);
+          
+          boardEl.appendChild(sq);
         }
       }
 
       document.getElementById('turn').textContent = 'Lượt: ' + (game.turn === 'white' ? '♔ Trắng' : '♚ Đen');
       
-      const hist = game.history.map(m => '<span class="move-item">' + m + '</span>').join('');
-      document.getElementById('history').innerHTML = hist || '<span style="opacity: 0.5;">Chưa có nước đi</span>';
+      let histHTML = '';
+      if (game.history.length > 0) {
+        for (let h of game.history) {
+          histHTML += '<span class="move-item">' + h + '</span>';
+        }
+      } else {
+        histHTML = '<span style="opacity: 0.5;">Chưa có nước đi</span>';
+      }
+      document.getElementById('history').innerHTML = histHTML;
     }
 
-    function click(r, c) {
+    function clickSquare(r, c) {
       const piece = game.board[r][c];
       const color = piece ? (piece[0] === 'w' ? 'white' : 'black') : null;
 
       if (game.selected) {
-        const isValid = game.validMoves.some(m => m.r === r && m.c === c);
+        let isValid = false;
+        for (let m of game.validMoves) {
+          if (m.r === r && m.c === c) {
+            isValid = true;
+            break;
+          }
+        }
+
         if (isValid) {
-          move(game.selected.r, game.selected.c, r, c);
+          makeMove(game.selected.r, game.selected.c, r, c);
           game.selected = null;
           game.validMoves = [];
           render();
@@ -495,7 +545,13 @@
       else if (type === 'Q') moves = queenMoves(r, c, color);
       else if (type === 'K') moves = kingMoves(r, c, color);
 
-      return moves.filter(m => !wouldCheck(r, c, m.r, m.c, color));
+      let valid = [];
+      for (let m of moves) {
+        if (!wouldLeaveInCheck(r, c, m.r, m.c, color)) {
+          valid.push(m);
+        }
+      }
+      return valid;
     }
 
     function pawnMoves(r, c, color) {
@@ -505,12 +561,12 @@
 
       if (inBounds(r + dir, c) && !game.board[r + dir][c]) {
         moves.push({ r: r + dir, c: c });
-        if (r === start && !game.board[r + 2 * dir][c]) {
-          moves.push({ r: r + 2 * dir, c: c });
+        if (r === start && !game.board[r + 2*dir][c]) {
+          moves.push({ r: r + 2*dir, c: c });
         }
       }
 
-      for (const dc of [-1, 1]) {
+      for (let dc of [-1, 1]) {
         const nr = r + dir, nc = c + dc;
         if (inBounds(nr, nc)) {
           const t = game.board[nr][nc];
@@ -527,11 +583,9 @@
       const moves = [];
       const offs = [[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]];
 
-      for (let i = 0; i < offs.length; i++) {
-        const dr = offs[i][0];
-        const dc = offs[i][1];
-        const nr = r + dr;
-        const nc = c + dc;
+      for (let off of offs) {
+        const nr = r + off[0];
+        const nc = c + off[1];
         if (inBounds(nr, nc)) {
           const t = game.board[nr][nc];
           if (!t || (t[0] === 'w' ? 'white' : 'black') !== color) {
@@ -545,12 +599,10 @@
 
     function slideMoves(r, c, color, dirs) {
       const moves = [];
-      for (let i = 0; i < dirs.length; i++) {
-        const dr = dirs[i][0];
-        const dc = dirs[i][1];
-        for (let j = 1; j < 8; j++) {
-          const nr = r + j * dr;
-          const nc = c + j * dc;
+      for (let dir of dirs) {
+        for (let dist = 1; dist < 8; dist++) {
+          const nr = r + dist * dir[0];
+          const nc = c + dist * dir[1];
           if (!inBounds(nr, nc)) break;
           const t = game.board[nr][nc];
           if (!t) {
@@ -597,7 +649,7 @@
       return moves;
     }
 
-    function move(fr, fc, tr, tc) {
+    function makeMove(fr, fc, tr, tc) {
       game.boardHistory.push(copyBoard());
       const piece = game.board[fr][fc];
       game.board[tr][tc] = piece;
@@ -633,8 +685,8 @@
             if (r + dir === king.r && (c - 1 === king.c || c + 1 === king.c)) return true;
           } else if (type === 'N') {
             const offs = [[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]];
-            for (let i = 0; i < offs.length; i++) {
-              if (r + offs[i][0] === king.r && c + offs[i][1] === king.c) return true;
+            for (let off of offs) {
+              if (r + off[0] === king.r && c + off[1] === king.c) return true;
             }
           } else if (type === 'K') {
             if (Math.abs(r - king.r) <= 1 && Math.abs(c - king.c) <= 1) return true;
@@ -644,12 +696,10 @@
             else if (type === 'R') dirs = [[0,1],[0,-1],[1,0],[-1,0]];
             else dirs = [[0,1],[0,-1],[1,0],[-1,0],[1,1],[1,-1],[-1,1],[-1,-1]];
             
-            for (let d = 0; d < dirs.length; d++) {
-              const dr = dirs[d][0];
-              const dc = dirs[d][1];
+            for (let d of dirs) {
               for (let i = 1; i < 8; i++) {
-                const nr = r + i * dr;
-                const nc = c + i * dc;
+                const nr = r + i * d[0];
+                const nc = c + i * d[1];
                 if (!inBounds(nr, nc)) break;
                 if (nr === king.r && nc === king.c) return true;
                 if (game.board[nr][nc]) break;
@@ -661,15 +711,15 @@
       return false;
     }
 
-    function wouldCheck(fr, fc, tr, tc, color) {
+    function wouldLeaveInCheck(fr, fc, tr, tc, color) {
       const p = game.board[fr][fc];
       const t = game.board[tr][tc];
       game.board[tr][tc] = p;
       game.board[fr][fc] = '';
-      const inCheck = isInCheck(color);
+      const check = isInCheck(color);
       game.board[fr][fc] = p;
       game.board[tr][tc] = t;
-      return inCheck;
+      return check;
     }
 
     function findKing(color) {
@@ -754,8 +804,10 @@
       elem.classList.toggle('active');
     }
 
-    initBoard();
-    render();
+    window.addEventListener('DOMContentLoaded', function() {
+      initBoard();
+      render();
+    });
   </script>
 </body>
 </html>
