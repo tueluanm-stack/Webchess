@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cờ Vua - Trò Chơi Thông Minh</title>
+  <title>Cờ Vua - Chess Game</title>
   <style>
     * {
       margin: 0;
@@ -59,6 +59,7 @@
       cursor: pointer;
       user-select: none;
       position: relative;
+      transition: background 0.1s;
     }
 
     .square.light {
@@ -148,24 +149,22 @@
       border-radius: 11px;
       cursor: pointer;
       position: relative;
-      border: 1px solid rgba(0,255,136,0.3);
-      transition: all 0.3s;
+      transition: all 0.2s;
     }
 
     .toggle.active {
-      background: rgba(0,255,136,0.4);
-      border-color: #00ff88;
+      background: #00aa00;
     }
 
     .toggle-dot {
       width: 18px;
       height: 18px;
-      background: #fff;
+      background: white;
       border-radius: 50%;
       position: absolute;
       top: 2px;
       left: 2px;
-      transition: left 0.3s;
+      transition: left 0.2s;
     }
 
     .toggle.active .toggle-dot {
@@ -176,6 +175,7 @@
       font-size: 0.8rem;
       opacity: 0.7;
       display: block;
+      margin-top: 3px;
     }
 
     .button-group {
@@ -185,65 +185,67 @@
       flex-wrap: wrap;
     }
 
-    button {
-      flex: 1;
-      min-width: 100px;
+    .btn-primary, .btn-secondary {
       padding: 10px 15px;
       border: none;
       border-radius: 6px;
       cursor: pointer;
       font-weight: bold;
-      transition: all 0.3s;
+      transition: all 0.2s;
+      font-size: 0.95rem;
     }
 
     .btn-primary {
-      background: linear-gradient(135deg, #00ff88, #00cc66);
+      background: linear-gradient(135deg, #00ff88 0%, #00cc66 100%);
       color: #000;
+      flex: 1;
+      min-width: 100px;
     }
 
     .btn-primary:hover {
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(0,255,136,0.6);
+      box-shadow: 0 5px 15px rgba(0,255,136,0.4);
     }
 
     .btn-secondary {
-      background: rgba(0,255,136,0.1);
-      color: #00ff88;
-      border: 1px solid rgba(0,255,136,0.3);
-    }
-
-    .btn-secondary:hover {
-      background: rgba(0,255,136,0.2);
+      background: rgba(255,255,255,0.2);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.3);
     }
 
     .btn-small {
       padding: 8px 12px;
       font-size: 0.85rem;
+      flex: 0.5;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.3);
     }
 
     .move-history {
-      background: rgba(255,255,255,0.05);
+      margin-top: 20px;
+      background: rgba(0,0,0,0.3);
       padding: 12px;
       border-radius: 8px;
-      margin-top: 15px;
-      max-height: 120px;
+      max-height: 200px;
       overflow-y: auto;
-      font-size: 0.8rem;
+      font-size: 0.9rem;
     }
 
     .move-history h4 {
       color: #00ff88;
-      margin-bottom: 8px;
-      font-size: 0.9rem;
+      margin-bottom: 10px;
+      font-size: 0.95rem;
     }
 
     .move-item {
       display: inline-block;
-      background: rgba(0,255,136,0.15);
-      padding: 3px 6px;
-      margin: 2px;
+      background: rgba(0,255,136,0.2);
+      padding: 2px 6px;
       border-radius: 3px;
-      border: 1px solid rgba(0,255,136,0.3);
+      margin: 2px;
+      font-family: 'Courier New', monospace;
     }
 
     @media (max-width: 768px) {
@@ -281,12 +283,12 @@
       <div class="info-box" id="turn">Lượt: ♔ Trắng</div>
       <div class="info-box" id="status">Đang chơi</div>
 
-      <h3 style="color: #00ff88; margin-top: 20px; margin-bottom: 15px; font-size: 0.95rem;">⚙️ CÀI ĐẶT LUẬT</h3>
+      <h3 style="color: #00ff88; margin-top: 20px; margin-bottom: 15px; font-size: 0.95rem;">⚙ CÀI ĐẶT LUẬT</h3>
 
       <div class="setting-item">
         <div class="setting-label">
           <span>Báo Chiếu (Check)</span>
-          <div class="toggle active" id="checkToggle" onclick="toggleSetting('checkDetection', this)">
+          <div class="toggle active" id="checkToggle" onclick="toggleCheck(this)">
             <div class="toggle-dot"></div>
           </div>
         </div>
@@ -296,37 +298,17 @@
       <div class="setting-item">
         <div class="setting-label">
           <span>Ăn Vua</span>
-          <div class="toggle" id="kingToggle" onclick="toggleSetting('kingCapture', this)">
+          <div class="toggle" id="kingToggle" onclick="toggleKing(this)">
             <div class="toggle-dot"></div>
           </div>
         </div>
-        <span class="small-text">Cho phép ăn vua khi không báo</span>
-      </div>
-
-      <div class="setting-item">
-        <div class="setting-label">
-          <span>Nhập Thành (Castling)</span>
-          <div class="toggle active" id="castlingToggle" onclick="toggleSetting('castling', this)">
-            <div class="toggle-dot"></div>
-          </div>
-        </div>
-        <span class="small-text">Cho phép nhập thành cả hai bên</span>
-      </div>
-
-      <div class="setting-item">
-        <div class="setting-label">
-          <span>Tốt Qua Đường (En Passant)</span>
-          <div class="toggle active" id="enPassantToggle" onclick="toggleSetting('enPassant', this)">
-            <div class="toggle-dot"></div>
-          </div>
-        </div>
-        <span class="small-text">Cho phép tốt qua đường</span>
+        <span class="small-text">Cho phép ăn vua</span>
       </div>
 
       <div class="setting-item">
         <div class="setting-label">
           <span>Hiển Thị Nước Hợp Lệ</span>
-          <div class="toggle active" id="validToggle" onclick="toggleSetting('showValidMoves', this)">
+          <div class="toggle active" id="validToggle" onclick="toggleValid(this)">
             <div class="toggle-dot"></div>
           </div>
         </div>
@@ -336,28 +318,21 @@
       <div class="setting-item">
         <div class="setting-label">
           <span>Nước Đi Cuối</span>
-          <div class="toggle active" id="lastToggle" onclick="toggleSetting('showLastMove', this)">
+          <div class="toggle active" id="lastToggle" onclick="toggleLast(this)">
             <div class="toggle-dot"></div>
           </div>
         </div>
         <span class="small-text">Tô sáng nước đi trước</span>
       </div>
 
-      <div class="setting-item">
+      <div class="setting-item" style="border-bottom: none;">
         <div class="setting-label">
           <span>Âm Thanh</span>
-          <div class="toggle active" id="soundToggle" onclick="toggleSetting('sound', this)">
+          <div class="toggle active" id="soundToggle" onclick="toggleSound(this)">
             <div class="toggle-dot"></div>
           </div>
         </div>
         <span class="small-text">Âm thanh di chuyển quân</span>
-      </div>
-
-      <div class="setting-item" style="border-bottom: none;">
-        <div class="setting-label">
-          <span>Chế Độ:</span>
-          <span id="gameMode">2 Người</span>
-        </div>
       </div>
 
       <div class="button-group">
@@ -379,13 +354,9 @@
       bK: '♚', bQ: '♛', bR: '♜', bB: '♝', bN: '♞', bP: '♟'
     };
 
-    const PIECE_VALUES = { P: 1, N: 3, B: 3, R: 5, Q: 9, K: 100 };
-
     let settings = {
       checkDetection: true,
       kingCapture: false,
-      castling: true,
-      enPassant: true,
       showValidMoves: true,
       showLastMove: true,
       sound: true
@@ -431,7 +402,7 @@
           const col = game.isFlipped ? 7 - c : c;
 
           const sq = document.createElement('div');
-          sq.className = `square ${(row + col) % 2 === 0 ? 'light' : 'dark'}`;
+          sq.className = 'square ' + ((row + col) % 2 === 0 ? 'light' : 'dark');
           sq.dataset.row = row;
           sq.dataset.col = col;
 
@@ -467,20 +438,22 @@
             }
           }
 
-          sq.addEventListener('click', () => click(row, col));
+          sq.addEventListener('click', function() {
+            click(row, col);
+          });
           board.appendChild(sq);
         }
       }
 
-      document.getElementById('turn').textContent = `Lượt: ${game.turn === 'white' ? '♔ Trắng' : '♚ Đen'}`;
+      document.getElementById('turn').textContent = 'Lượt: ' + (game.turn === 'white' ? '♔ Trắng' : '♚ Đen');
       
-      const hist = game.history.map((m, i) => `<span class="move-item">${m}</span>`).join('');
+      const hist = game.history.map(m => '<span class="move-item">' + m + '</span>').join('');
       document.getElementById('history').innerHTML = hist || '<span style="opacity: 0.5;">Chưa có nước đi</span>';
     }
 
     function click(r, c) {
       const piece = game.board[r][c];
-      const color = piece ? piece[0] === 'w' ? 'white' : 'black' : null;
+      const color = piece ? (piece[0] === 'w' ? 'white' : 'black') : null;
 
       if (game.selected) {
         const isValid = game.validMoves.some(m => m.r === r && m.c === c);
@@ -490,7 +463,7 @@
           game.validMoves = [];
           render();
         } else if (color === game.turn) {
-          game.selected = { r, c };
+          game.selected = { r: r, c: c };
           game.validMoves = getMoves(r, c);
           render();
         } else {
@@ -500,7 +473,7 @@
         }
       } else {
         if (piece && color === game.turn) {
-          game.selected = { r, c };
+          game.selected = { r: r, c: c };
           game.validMoves = getMoves(r, c);
           render();
         }
@@ -531,9 +504,9 @@
       const start = color === 'white' ? 6 : 1;
 
       if (inBounds(r + dir, c) && !game.board[r + dir][c]) {
-        moves.push({ r: r + dir, c });
+        moves.push({ r: r + dir, c: c });
         if (r === start && !game.board[r + 2 * dir][c]) {
-          moves.push({ r: r + 2 * dir, c });
+          moves.push({ r: r + 2 * dir, c: c });
         }
       }
 
@@ -554,8 +527,11 @@
       const moves = [];
       const offs = [[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]];
 
-      for (const [dr, dc] of offs) {
-        const nr = r + dr, nc = c + dc;
+      for (let i = 0; i < offs.length; i++) {
+        const dr = offs[i][0];
+        const dc = offs[i][1];
+        const nr = r + dr;
+        const nc = c + dc;
         if (inBounds(nr, nc)) {
           const t = game.board[nr][nc];
           if (!t || (t[0] === 'w' ? 'white' : 'black') !== color) {
@@ -569,9 +545,12 @@
 
     function slideMoves(r, c, color, dirs) {
       const moves = [];
-      for (const [dr, dc] of dirs) {
-        for (let i = 1; i < 8; i++) {
-          const nr = r + i * dr, nc = c + i * dc;
+      for (let i = 0; i < dirs.length; i++) {
+        const dr = dirs[i][0];
+        const dc = dirs[i][1];
+        for (let j = 1; j < 8; j++) {
+          const nr = r + j * dr;
+          const nc = c + j * dc;
           if (!inBounds(nr, nc)) break;
           const t = game.board[nr][nc];
           if (!t) {
@@ -604,7 +583,8 @@
       for (let dr = -1; dr <= 1; dr++) {
         for (let dc = -1; dc <= 1; dc++) {
           if (dr === 0 && dc === 0) continue;
-          const nr = r + dr, nc = c + dc;
+          const nr = r + dr;
+          const nc = c + dc;
           if (inBounds(nr, nc)) {
             const t = game.board[nr][nc];
             if (!t || (t[0] === 'w' ? 'white' : 'black') !== color) {
@@ -618,14 +598,22 @@
     }
 
     function move(fr, fc, tr, tc) {
-      game.boardHistory.push(game.board.map(row => [...row]));
+      game.boardHistory.push(copyBoard());
       const piece = game.board[fr][fc];
       game.board[tr][tc] = piece;
       game.board[fr][fc] = '';
-      game.lastMove = { fr, fc, tr, tc };
-      game.history.push(`${String.fromCharCode(97 + fc)}${8 - fr}→${String.fromCharCode(97 + tc)}${8 - tr}`);
+      game.lastMove = { fr: fr, fc: fc, tr: tr, tc: tc };
+      game.history.push(String.fromCharCode(97 + fc) + (8 - fr) + '-' + String.fromCharCode(97 + tc) + (8 - tr));
       if (settings.sound) playSound();
       game.turn = game.turn === 'white' ? 'black' : 'white';
+    }
+
+    function copyBoard() {
+      const copy = [];
+      for (let i = 0; i < 8; i++) {
+        copy.push(game.board[i].slice());
+      }
+      return copy;
     }
 
     function isInCheck(color) {
@@ -645,14 +633,23 @@
             if (r + dir === king.r && (c - 1 === king.c || c + 1 === king.c)) return true;
           } else if (type === 'N') {
             const offs = [[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]];
-            if (offs.some(([dr, dc]) => r + dr === king.r && c + dc === king.c)) return true;
+            for (let i = 0; i < offs.length; i++) {
+              if (r + offs[i][0] === king.r && c + offs[i][1] === king.c) return true;
+            }
           } else if (type === 'K') {
             if (Math.abs(r - king.r) <= 1 && Math.abs(c - king.c) <= 1) return true;
-          } else if (['B', 'R', 'Q'].includes(type)) {
-            let dirs = type === 'B' ? [[1,1],[1,-1],[-1,1],[-1,-1]] : type === 'R' ? [[0,1],[0,-1],[1,0],[-1,0]] : [[0,1],[0,-1],[1,0],[-1,0],[1,1],[1,-1],[-1,1],[-1,-1]];
-            for (const [dr, dc] of dirs) {
+          } else if (type === 'B' || type === 'R' || type === 'Q') {
+            let dirs = [];
+            if (type === 'B') dirs = [[1,1],[1,-1],[-1,1],[-1,-1]];
+            else if (type === 'R') dirs = [[0,1],[0,-1],[1,0],[-1,0]];
+            else dirs = [[0,1],[0,-1],[1,0],[-1,0],[1,1],[1,-1],[-1,1],[-1,-1]];
+            
+            for (let d = 0; d < dirs.length; d++) {
+              const dr = dirs[d][0];
+              const dc = dirs[d][1];
               for (let i = 1; i < 8; i++) {
-                const nr = r + i * dr, nc = c + i * dc;
+                const nr = r + i * dr;
+                const nc = c + i * dc;
                 if (!inBounds(nr, nc)) break;
                 if (nr === king.r && nc === king.c) return true;
                 if (game.board[nr][nc]) break;
@@ -680,7 +677,7 @@
       for (let r = 0; r < 8; r++) {
         for (let c = 0; c < 8; c++) {
           if (game.board[r][c] === pre + 'K') {
-            return { r, c };
+            return { r: r, c: c };
           }
         }
       }
@@ -689,12 +686,6 @@
 
     function inBounds(r, c) {
       return r >= 0 && r < 8 && c >= 0 && c < 8;
-    }
-
-    function toggleSetting(key, elem) {
-      settings[key] = !settings[key];
-      elem.classList.toggle('active');
-      render();
     }
 
     function flipBoard() {
@@ -732,6 +723,35 @@
         osc.start(ctx.currentTime);
         osc.stop(ctx.currentTime + 0.1);
       } catch (e) {}
+    }
+
+    function toggleCheck(elem) {
+      settings.checkDetection = !settings.checkDetection;
+      elem.classList.toggle('active');
+      render();
+    }
+
+    function toggleKing(elem) {
+      settings.kingCapture = !settings.kingCapture;
+      elem.classList.toggle('active');
+      render();
+    }
+
+    function toggleValid(elem) {
+      settings.showValidMoves = !settings.showValidMoves;
+      elem.classList.toggle('active');
+      render();
+    }
+
+    function toggleLast(elem) {
+      settings.showLastMove = !settings.showLastMove;
+      elem.classList.toggle('active');
+      render();
+    }
+
+    function toggleSound(elem) {
+      settings.sound = !settings.sound;
+      elem.classList.toggle('active');
     }
 
     initBoard();
